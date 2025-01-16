@@ -1,14 +1,18 @@
 ﻿using Raylib_cs;
-
+using static Raylib_cs.Raylib;
 namespace HelloWorld;
 
 class Program
 {
   const int MaxLines = 100;
-
+  public bool IsPaused = false;
+  public void TogglePause()
+  {
+    IsPaused = !IsPaused;
+  }
   public static void Main()
   {
-    Raylib.InitWindow(800, 480, "Hello World");
+    Program program = new Program();
 
     Random random = new Random();
     int[] numbers = new int[100];
@@ -18,24 +22,31 @@ class Program
     {
       numbers[i] = random.Next(1, 100);
     }
-    Console.WriteLine("numeros", numbers);
-
-    while (!Raylib.WindowShouldClose())
+    InitWindow(800, 480, "Algorithm Visualization");
+    SetTargetFPS(60);
+    while (!WindowShouldClose())
     {
-      Raylib.BeginDrawing();
-      Raylib.ClearBackground(Color.White);
+      BeginDrawing();
+      DrawText("Algorithm Visualization", 12, 12, 20, Color.Black);
+      DrawText("Press SPACE to pause", GetScreenWidth() / 3, 12, 20, Color.Red);
 
-      Raylib.DrawText("Hello, world!", 12, 12, 20, Color.Black);
-
+      if (IsKeyPressed(KeyboardKey.Space))
+      {
+        program.TogglePause();
+      }
       for (int i = 0; i < MaxLines; i++)
       {
-        Console.WriteLine($"=== height === {i}");
-        Raylib.DrawLine(110 + i, 600, 110 + i, 600 - numbers[i], Color.Blue);
+        DrawLine(GetScreenWidth() / 5 + i, GetScreenHeight() - 10 - numbers[i], GetScreenWidth() / 5 + i, GetScreenHeight() - 10, Color.Blue);
       }
-
-      Raylib.EndDrawing();
+      ClearBackground(Color.White);
+      if (program.IsPaused)
+      {
+        DrawText("Paused", 350, 200, 20, Color.Gray);
+      }
+      DrawFPS(GetScreenWidth() - 150, 12);
+      EndDrawing();
     }
 
-    Raylib.CloseWindow();
+    CloseWindow();
   }
 }
