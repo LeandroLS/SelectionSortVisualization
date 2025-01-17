@@ -6,21 +6,27 @@ public class Line
 {
   public int Height { get; set; }
   public bool IsActive { get; set; } = false;
+  public bool IsSorted { get; set; } = false;
   public Line(int height)
   {
     Height = height;
   }
 }
+
 class Program
 {
   public const int MaxLines = 100;
   public bool IsPaused = false;
   public List<Line> Lines { get; set; } = new List<Line>();
   private int CurrentLineIndex = 0;
+  private int MinIndex = 0;
+  private int SortedIndex = 0;
+
   public void TogglePause()
   {
     IsPaused = !IsPaused;
   }
+
   public static void Main()
   {
     Program program = new Program();
@@ -28,53 +34,92 @@ class Program
 
     for (int i = 0; i < MaxLines; i++)
     {
-      program.Lines.Add(new Line(random.Next(1, 100)));
+      program.Lines.Add(new Line(random.Next(1, 300)));
     }
-    InitWindow(800, 480, "Algorithm Visualization");
-    SetTargetFPS(10);
+
+    InitWindow(1000, 580, "Selection Sort Visualization");
+    SetTargetFPS(60);
+
     while (!WindowShouldClose())
     {
-      Console.WriteLine($"current index {program.CurrentLineIndex}");
-      Console.WriteLine($"program.IsPaused {program.IsPaused}");
       BeginDrawing();
-      DrawText("Algorithm Visualization", 12, 12, 20, Color.Black);
-      DrawText("Press SPACE to pause", GetScreenWidth() / 3, 12, 20, Color.Red);
       ClearBackground(Color.White);
+
+      DrawText("Selection Sort Visualization", 12, 12, 20, Color.Black);
+      DrawText("Press SPACE to pause", GetScreenWidth() / 3, 12, 20, Color.Red);
       DrawFPS(GetScreenWidth() - 150, 12);
+
       if (IsKeyPressed(KeyboardKey.Space))
       {
         program.TogglePause();
       }
+
       if (program.IsPaused)
       {
         DrawText("Paused", 350, 200, 20, Color.Gray);
       }
       else
       {
-        if (program.CurrentLineIndex > 0)
-        {
-          program.Lines[program.CurrentLineIndex - 1].IsActive = false;
-        }
-        program.Lines[program.CurrentLineIndex].IsActive = true;
-        program.CurrentLineIndex = program.CurrentLineIndex + 1;
-        for (int i = 0; i < program.Lines.Count(); i++)
-        {
-          DrawLine(
-            GetScreenWidth() / 5 + i,
-            GetScreenHeight() - 10 - program.Lines[i].Height,
-            GetScreenWidth() / 5 + i, GetScreenHeight() - 10,
-            program.Lines[i].IsActive ? Color.Red : Color.Blue
-          );
-        }
-        if (program.CurrentLineIndex == MaxLines)
-        {
-          program.Lines.Last().IsActive = false;
-          program.CurrentLineIndex = 0;
-          program.IsPaused = true;
-        }
+        program.StepSelectionSort();
       }
+
+      for (int i = 0; i < program.Lines.Count; i++)
+      {
+        var line = program.Lines[i];
+        Color lineColor;
+
+        if (line.IsSorted)
+          lineColor = Color.Green;
+        else if (line.IsActive)
+          lineColor = Color.Red;
+        else
+          lineColor = Color.Blue;
+
+        DrawLine(
+            GetScreenWidth() / 5 + i * 5,
+            GetScreenHeight() - 10 - line.Height,
+            GetScreenWidth() / 5 + i * 5,
+            GetScreenHeight() - 10,
+            lineColor
+        );
+      }
+
       EndDrawing();
     }
+
     CloseWindow();
+  }
+
+  public void StepSelectionSort()
+  {
+    if (SortedIndex < Lines.Count)
+    {
+      if (CurrentLineIndex > 0)
+      {
+        Lines[CurrentLineIndex - 1].IsActive = false;
+      }
+      Lines[CurrentLineIndex].IsActive = true;
+      if (Lines[CurrentLineIndex].Height < Lines[MinIndex].Height)
+      {
+        MinIndex = CurrentLineIndex;
+      }
+
+      CurrentLineIndex++;
+
+      if (CurrentLineIndex == Lines.Count)
+      {
+        (Lines[SortedIndex], Lines[MinIndex]) = (Lines[MinIndex], Lines[SortedIndex]);
+
+        Lines[SortedIndex].IsSorted = true;
+
+        SortedIndex++;
+        CurrentLineIndex = SortedIndex;
+        MinIndex = SortedIndex;
+      }
+    }
+    else
+    {
+      IsPaused = true;
+    }
   }
 }
