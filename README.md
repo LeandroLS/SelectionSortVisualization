@@ -5,5 +5,5 @@ This program shows how selection sort algorithm works in a visual mode.
 ![](SelectionSort.gif) 
 
 
-### how to run
-- `dotnet run`
+### How to run
+Do `dotnet run` in your terminal in the same folder as the project.
