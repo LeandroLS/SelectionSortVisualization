@@ -34,10 +34,12 @@ class Program
 
     for (int i = 0; i < MaxLines; i++)
     {
-      program.Lines.Add(new Line(random.Next(1, 300)));
+      program.Lines.Add(new Line(random.Next(1, 450)));
     }
 
     InitWindow(1000, 580, "Selection Sort Visualization");
+    InitAudioDevice();
+    Sound sound = LoadSound("teste.wav");
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
@@ -51,6 +53,7 @@ class Program
 
       if (IsKeyPressed(KeyboardKey.Space))
       {
+        PlaySound(sound);
         program.TogglePause();
       }
 
@@ -83,10 +86,11 @@ class Program
             lineColor
         );
       }
-
       EndDrawing();
     }
 
+    UnloadSound(sound);
+    CloseAudioDevice();
     CloseWindow();
   }
 
