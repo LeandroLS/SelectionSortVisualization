@@ -39,7 +39,7 @@ class Program
 
     InitWindow(1000, 580, "Selection Sort Visualization");
     InitAudioDevice();
-    Sound sound = LoadSound("teste.wav");
+    Sound sound = LoadSound("jump.wav");
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
@@ -53,7 +53,6 @@ class Program
 
       if (IsKeyPressed(KeyboardKey.Space))
       {
-        PlaySound(sound);
         program.TogglePause();
       }
 
@@ -72,7 +71,14 @@ class Program
         Color lineColor;
 
         if (line.IsSorted)
+        {
           lineColor = Color.Green;
+          if (!line.IsActive)
+          {
+            PlaySound(sound);
+            line.IsActive = true;
+          }
+        }
         else if (line.IsActive)
           lineColor = Color.Red;
         else
